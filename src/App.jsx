@@ -1,39 +1,35 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './context/CartContext';
-
-// Import Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-
-// Import Pages
 import Home from './pages/Home';
-import Auth from './pages/Auth';
 import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
+import Auth from './pages/Auth';
 import Admin from './pages/Admin';
-import Profile from './pages/Profile';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import UserDashboard from './pages/UserDashboard';
+import Profile from './pages/Profile'; // <-- Import Profile
+import { CartProvider } from './context/CartContext';
 
 export default function App() {
   return (
     <CartProvider>
       <Router>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#0a0a0c', color: '#fff' }}>
           <Navbar />
-    
           <main style={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/profile" element={<Profile />} /> {/* <-- Profile Route */}
             </Routes>
           </main>
-
           <Footer />
-
         </div>
       </Router>
     </CartProvider>

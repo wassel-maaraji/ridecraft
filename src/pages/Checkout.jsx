@@ -5,96 +5,152 @@ import { CartContext } from '../context/CartContext';
 export default function Checkout() {
   const { cart, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
-  
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   // Calculate total
-  const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handlePayment = (e) => {
+  // Handle fake payment processing
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsProcessing(true);
-
-    // Simulate an API call to a payment gateway
+    setIsSubmitting(true);
+    
+    // Simulate a 2-second API call for payment validation
     setTimeout(() => {
-      setIsProcessing(false);
-      setPaymentSuccess(true);
-      clearCart(); // Empty the cart upon successful payment
-      
-      // Redirect back to home after 3 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
+      setIsSubmitting(false);
+      setOrderPlaced(true);
+      clearCart(); // Empty the cart upon success
     }, 2000);
   };
 
-  if (cart.length === 0 && !paymentSuccess) {
+  // 1. Edge Case: User navigates here with an empty cart
+  if (cart.length === 0 && !orderPlaced) {
     return (
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <h2>No items to checkout</h2>
-        <button onClick={() => navigate('/')} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-          Return to Shop
-        </button>
+      <div className="container" style={{ textAlign: 'center', padding: '100px 20px' }}>
+        <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>Your cart is empty.</h2>
+        <button className="btn-primary" onClick={() => navigate('/')}>Return to Shop</button>
       </div>
     );
   }
 
-  if (paymentSuccess) {
+  // 2. Success State: Order confirmed
+  if (orderPlaced) {
     return (
-      <div style={{ textAlign: 'center', marginTop: '100px', color: '#28a745' }}>
-        <h2>Payment Successful!</h2>
-        <p>Thank you for your order. Redirecting to home...</p>
+      <div className="container" style={{ textAlign: 'center', padding: '100px 20px' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '20px' }}>✅</div>
+        <h2>Order Confirmed!</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>
+          Your premium ride is being prepared for delivery. A confirmation has been sent to your email.
+        </p>
+        <button className="btn-primary" onClick={() => navigate('/')}>Return to Shop</button>
       </div>
     );
   }
 
+  // 3. Main Checkout Layout
   return (
-    <div style={{ maxWidth: '500px', margin: '40px auto', padding: '20px' }}>
-      <h2>Checkout</h2>
-      <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
-        <h3>Order Total: ${cartTotal.toLocaleString()}</h3>
-      </div>
+    <div className="container">
+      <h2 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '30px' }}>
+        Secure Checkout
+      </h2>
 
-      <form onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <div>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Full Name</label>
-          <input type="text" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} />
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
         
-        <div>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Card Number</label>
-          <input type="text" pattern="\d{16}" placeholder="1234123412341234" maxLength="16" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} />
+        {/* Left Column: Form */}
+        <form onSubmit={handleSubmit} style={{ backgroundColor: 'var(--surface-color)', padding: '30px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          
+          <h3 style={{ marginBottom: '20px' }}>Shipping Details</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>Full Name</label>
+              <input type="text" required placeholder="John Doe" />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>Email Address</label>
+              <input type="email" required placeholder="john@example.com" />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>Shipping Address</label>
+              <input type="text" required placeholder="123 Rider Blvd" />
+            </div>
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>City</label>
+                <input type="text" required placeholder="Los Angeles" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>ZIP Code</label>
+                <input type="text" required placeholder="90001" />
+              </div>
+            </div>
+          </div>
+
+          <h3 style={{ margin: '30px 0 20px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>Payment Info</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>Card Number</label>
+              <input type="text" required placeholder="0000 0000 0000 0000" maxLength="16" />
+            </div>
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>Expiry</label>
+                <input type="text" required placeholder="MM/YY" maxLength="5" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-muted)' }}>CVV</label>
+                <input type="password" required placeholder="123" maxLength="4" />
+              </div>
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            className="btn-primary" 
+            style={{ width: '100%', marginTop: '30px', padding: '15px', fontSize: '1.1rem' }} 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Processing Payment...' : `Pay $${total.toLocaleString()}`}
+          </button>
+        </form>
+
+        {/* Right Column: Order Summary */}
+        <div style={{ backgroundColor: '#121215', padding: '30px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', height: 'fit-content' }}>
+          <h3 style={{ marginBottom: '20px' }}>Order Summary</h3>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
+            {cart.map(item => (
+              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <img 
+                    src={item.images} 
+                    alt={item.model} 
+                    style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} 
+                  />
+                  <span style={{ fontSize: '0.95rem' }}>
+                    <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>{item.quantity}x</span>
+                    {item.make} {item.model}
+                  </span>
+                </div>
+                
+                <span style={{ fontWeight: 'bold' }}>
+                  ${(item.price * item.quantity).toLocaleString()}
+                </span>
+                
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Total</span>
+            <span style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--accent-primary)' }}>
+              ${total.toLocaleString()}
+            </span>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Expiry (MM/YY)</label>
-            <input type="text" pattern="\d{2}/\d{2}" placeholder="12/26" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>CVV</label>
-            <input type="text" pattern="\d{3,4}" placeholder="123" maxLength="4" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} />
-          </div>
-        </div>
-
-        <button 
-          type="submit" 
-          disabled={isProcessing}
-          style={{ 
-            marginTop: '10px', 
-            padding: '15px', 
-            backgroundColor: isProcessing ? '#6c757d' : '#007bff', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '5px', 
-            cursor: isProcessing ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          {isProcessing ? 'Processing Payment...' : `Pay $${cartTotal.toLocaleString()}`}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }
