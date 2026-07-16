@@ -6,7 +6,7 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
   const [msgCount, setMsgCount] = useState(0);
   const navigate = useNavigate();
-  const { cart } = useContext(CartContext); // Pull cart to show the number of items
+  const { cart } = useContext(CartContext); 
 
   useEffect(() => {
     const loadData = () => {
@@ -27,10 +27,9 @@ export default function Navbar() {
   return (
     <nav style={{ padding: '15px 30px', borderBottom: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Link to="/" style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold', textDecoration: 'none' }}>RIDECRAFT</Link>
+      
       <div style={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
         <Link to="/" style={{ color: '#aaa', textDecoration: 'none' }}>Shop</Link>
-        
-        {/* CART LINK - This is what was missing! */}
         <Link to="/cart" style={{ color: '#fff', textDecoration: 'none', fontWeight: 'bold' }}>
           Cart {cart.length > 0 && `(${cart.length})`}
         </Link>
@@ -42,7 +41,12 @@ export default function Navbar() {
             <Link to="/admin" style={{ color: '#fff', textDecoration: 'none' }}>Admin</Link>
           </>
         ) : (
-          user && <Link to="/dashboard" style={{ color: '#aaa', textDecoration: 'none' }}>My Dashboard</Link>
+          <>
+            {/* THIS WAS MISSING: The Contact link for regular users & guests */}
+            <Link to="/contact" style={{ color: '#aaa', textDecoration: 'none' }}>Contact Us</Link>
+            
+            {user && <Link to="/dashboard" style={{ color: '#aaa', textDecoration: 'none' }}>My Dashboard</Link>}
+          </>
         )}
 
         {user ? (
