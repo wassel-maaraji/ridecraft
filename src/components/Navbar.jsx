@@ -30,21 +30,25 @@ export default function Navbar() {
       
       <div style={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
         <Link to="/" style={{ color: '#aaa', textDecoration: 'none' }}>Shop</Link>
-        <Link to="/cart" style={{ color: '#fff', textDecoration: 'none', fontWeight: 'bold' }}>
-          Cart {cart.length > 0 && `(${cart.length})`}
-        </Link>
+        <Link to="/about" style={{ color: '#aaa', textDecoration: 'none' }}>About Us</Link>
+        
+        {/* Only show Cart to regular users and guests, NOT the admin */}
+        {user?.role !== 'admin' && (
+          <Link to="/cart" style={{ color: '#fff', textDecoration: 'none', fontWeight: 'bold' }}>
+            Cart {cart.length > 0 && `(${cart.length})`}
+          </Link>
+        )}
         
         {user?.role === 'admin' ? (
           <>
-            <Link to="/about" style={{ color: '#eab308', textDecoration: 'none' }}>Pro Tools</Link>
+            {/* Admin sees Inbox instead of Contact Us */}
             <Link to="/contact" style={{ color: msgCount > 0 ? '#ef4444' : '#aaa', textDecoration: 'none' }}>Inbox {msgCount > 0 && `(${msgCount})`}</Link>
             <Link to="/admin" style={{ color: '#fff', textDecoration: 'none' }}>Admin</Link>
           </>
         ) : (
           <>
-            {/* THIS WAS MISSING: The Contact link for regular users & guests */}
+            {/* Regular users see Contact Us and Dashboard */}
             <Link to="/contact" style={{ color: '#aaa', textDecoration: 'none' }}>Contact Us</Link>
-            
             {user && <Link to="/dashboard" style={{ color: '#aaa', textDecoration: 'none' }}>My Dashboard</Link>}
           </>
         )}
